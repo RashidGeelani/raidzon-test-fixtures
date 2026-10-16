@@ -1,0 +1,350 @@
+[
+  {
+    "name": "Empty raid",
+    "facts": {
+      "outcome": "EMPTY",
+      "defendingCount": 7,
+      "touches": 0,
+      "bonus": false
+    },
+    "expected": {
+      "attackingPoints": 0,
+      "defendingPoints": 0,
+      "raiderPoints": 0,
+      "defenderPoints": 0,
+      "attackingRevivals": 0,
+      "defendingRevivals": 0,
+      "allOutPoints": 0,
+      "superTackleExtra": 0
+    }
+  },
+  {
+    "name": "Bonus at six gives no revival",
+    "facts": {
+      "outcome": "EMPTY",
+      "defendingCount": 6,
+      "touches": 0,
+      "bonus": true
+    },
+    "expected": {
+      "attackingPoints": 1,
+      "defendingPoints": 0,
+      "raiderPoints": 1,
+      "defenderPoints": 0,
+      "attackingRevivals": 0,
+      "defendingRevivals": 0,
+      "allOutPoints": 0,
+      "superTackleExtra": 0
+    }
+  },
+  {
+    "name": "Bonus below five rejected",
+    "facts": {
+      "outcome": "EMPTY",
+      "defendingCount": 4,
+      "touches": 0,
+      "bonus": true
+    },
+    "error": "Bonus requires at least six defenders."
+  },
+  {
+    "name": "Bonus retained with tackle",
+    "facts": {
+      "outcome": "TACKLE",
+      "defendingCount": 6,
+      "touches": 0,
+      "bonus": true
+    },
+    "expected": {
+      "attackingPoints": 1,
+      "defendingPoints": 1,
+      "raiderPoints": 1,
+      "defenderPoints": 1,
+      "attackingRevivals": 0,
+      "defendingRevivals": 1,
+      "allOutPoints": 0,
+      "superTackleExtra": 0
+    }
+  },
+  {
+    "name": "Super Tackle at exactly three",
+    "facts": {
+      "outcome": "TACKLE",
+      "defendingCount": 3,
+      "touches": 0,
+      "bonus": false
+    },
+    "expected": {
+      "attackingPoints": 0,
+      "defendingPoints": 2,
+      "raiderPoints": 0,
+      "defenderPoints": 1,
+      "attackingRevivals": 0,
+      "defendingRevivals": 1,
+      "allOutPoints": 0,
+      "superTackleExtra": 1
+    }
+  },
+  {
+    "name": "Super Tackle at two",
+    "facts": {
+      "outcome": "TACKLE",
+      "defendingCount": 2,
+      "touches": 0,
+      "bonus": false
+    },
+    "expected": {
+      "attackingPoints": 0,
+      "defendingPoints": 2,
+      "raiderPoints": 0,
+      "defenderPoints": 1,
+      "attackingRevivals": 0,
+      "defendingRevivals": 1,
+      "allOutPoints": 0,
+      "superTackleExtra": 1
+    }
+  },
+  {
+    "name": "Normal tackle at four",
+    "facts": {
+      "outcome": "TACKLE",
+      "defendingCount": 4,
+      "touches": 0,
+      "bonus": false
+    },
+    "expected": {
+      "attackingPoints": 0,
+      "defendingPoints": 1,
+      "raiderPoints": 0,
+      "defenderPoints": 1,
+      "attackingRevivals": 0,
+      "defendingRevivals": 1,
+      "allOutPoints": 0,
+      "superTackleExtra": 0
+    }
+  },
+  {
+    "name": "Self-Out awards one team point and revival",
+    "facts": {
+      "outcome": "SELF_OUT",
+      "defendingCount": 3,
+      "touches": 0,
+      "bonus": false
+    },
+    "expected": {
+      "attackingPoints": 0,
+      "defendingPoints": 1,
+      "raiderPoints": 0,
+      "defenderPoints": 0,
+      "attackingRevivals": 0,
+      "defendingRevivals": 1,
+      "allOutPoints": 0,
+      "superTackleExtra": 0
+    }
+  },
+  {
+    "name": "Last defender gives team-only All-Out",
+    "facts": {
+      "outcome": "TOUCH",
+      "defendingCount": 1,
+      "touches": 1,
+      "bonus": false
+    },
+    "expected": {
+      "attackingPoints": 3,
+      "defendingPoints": 0,
+      "raiderPoints": 1,
+      "defenderPoints": 0,
+      "attackingRevivals": 1,
+      "defendingRevivals": 0,
+      "allOutPoints": 2,
+      "superTackleExtra": 0
+    }
+  },
+  {
+    "name": "Three touches plus bonus revives three",
+    "facts": {
+      "outcome": "TOUCH",
+      "defendingCount": 6,
+      "touches": 3,
+      "bonus": true
+    },
+    "expected": {
+      "attackingPoints": 4,
+      "defendingPoints": 0,
+      "raiderPoints": 4,
+      "defenderPoints": 0,
+      "attackingRevivals": 3,
+      "defendingRevivals": 0,
+      "allOutPoints": 0,
+      "superTackleExtra": 0
+    }
+  },
+  {
+    "name": "All defenders with bonus keeps credit separate",
+    "facts": {
+      "outcome": "TOUCH",
+      "defendingCount": 6,
+      "touches": 6,
+      "bonus": true
+    },
+    "expected": {
+      "attackingPoints": 9,
+      "defendingPoints": 0,
+      "raiderPoints": 7,
+      "defenderPoints": 0,
+      "attackingRevivals": 6,
+      "defendingRevivals": 0,
+      "allOutPoints": 2,
+      "superTackleExtra": 0
+    }
+  },
+  {
+    "name": "Empty cannot hide touches",
+    "facts": {
+      "outcome": "EMPTY",
+      "defendingCount": 7,
+      "touches": 1,
+      "bonus": false
+    },
+    "error": "Touch outcome requires defenders out."
+  },
+  {
+    "name": "Touch needs a defender",
+    "facts": {
+      "outcome": "TOUCH",
+      "defendingCount": 7,
+      "touches": 0,
+      "bonus": false
+    },
+    "error": "Touch outcome requires defenders out."
+  },
+  {
+    "name": "Too many touches rejected",
+    "facts": {
+      "outcome": "TOUCH",
+      "defendingCount": 2,
+      "touches": 3,
+      "bonus": false
+    },
+    "error": "Invalid touch count."
+  },
+  {
+    "name": "Touch and defender self-out share one atomic raid",
+    "facts": {
+      "outcome": "TOUCH",
+      "defendingCount": 2,
+      "touches": 1,
+      "bonus": false,
+      "defenderSelfOuts": 1
+    },
+    "expected": {
+      "attackingPoints": 4,
+      "defendingPoints": 0,
+      "raiderPoints": 1,
+      "defenderPoints": 0,
+      "attackingRevivals": 2,
+      "defendingRevivals": 0,
+      "allOutPoints": 2,
+      "superTackleExtra": 0
+    }
+  },
+  {
+    "name": "Defender self-out only gives no individual raid credit",
+    "facts": {
+      "outcome": "EMPTY",
+      "defendingCount": 5,
+      "touches": 0,
+      "bonus": false,
+      "defenderSelfOuts": 1
+    },
+    "expected": {
+      "attackingPoints": 1,
+      "defendingPoints": 0,
+      "raiderPoints": 0,
+      "defenderPoints": 0,
+      "attackingRevivals": 1,
+      "defendingRevivals": 0,
+      "allOutPoints": 0,
+      "superTackleExtra": 0
+    }
+  },
+  {
+    "name": "Opposing simultaneous outs give one point and revival each",
+    "facts": {
+      "outcome": "TACKLE",
+      "defendingCount": 5,
+      "touches": 0,
+      "bonus": false,
+      "defenderSelfOuts": 1
+    },
+    "expected": {
+      "attackingPoints": 1,
+      "defendingPoints": 1,
+      "raiderPoints": 0,
+      "defenderPoints": 1,
+      "attackingRevivals": 1,
+      "defendingRevivals": 1,
+      "allOutPoints": 0,
+      "superTackleExtra": 0
+    }
+  },
+  {
+    "name": "Zero defenders invalid before raid",
+    "facts": {
+      "outcome": "EMPTY",
+      "defendingCount": 0,
+      "touches": 0,
+      "bonus": false
+    },
+    "error": "Invalid defending count."
+  },
+  {
+    "name": "Bonus at exactly five is rejected",
+    "facts": {
+      "outcome": "EMPTY",
+      "defendingCount": 5,
+      "touches": 0,
+      "bonus": true
+    },
+    "error": "Bonus requires at least six defenders."
+  },
+  {
+    "name": "Bonus at seven is available",
+    "facts": {
+      "outcome": "EMPTY",
+      "defendingCount": 7,
+      "touches": 0,
+      "bonus": true
+    },
+    "expected": {
+      "attackingPoints": 1,
+      "defendingPoints": 0,
+      "raiderPoints": 1,
+      "defenderPoints": 0,
+      "attackingRevivals": 0,
+      "defendingRevivals": 0,
+      "allOutPoints": 0,
+      "superTackleExtra": 0
+    }
+  },
+  {
+    "name": "Opposing outs at three do not add Super Tackle extra",
+    "facts": {
+      "outcome": "TACKLE",
+      "defendingCount": 3,
+      "touches": 1,
+      "bonus": false
+    },
+    "expected": {
+      "attackingPoints": 1,
+      "defendingPoints": 1,
+      "raiderPoints": 1,
+      "defenderPoints": 1,
+      "attackingRevivals": 1,
+      "defendingRevivals": 1,
+      "allOutPoints": 0,
+      "superTackleExtra": 0
+    }
+  }
+]

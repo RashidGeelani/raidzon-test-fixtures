@@ -1,0 +1,188 @@
+{
+  "teams": [
+    {
+      "name": "Team 0",
+      "players": [
+        {
+          "id": "0-0",
+          "name": "Player 0-0",
+          "phone": "+919876543200",
+          "status": "ACTIVE",
+          "raidPoints": 0,
+          "tacklePoints": 0
+        },
+        {
+          "id": "0-1",
+          "name": "Player 0-1",
+          "phone": "+919876543201",
+          "status": "ACTIVE",
+          "raidPoints": 0,
+          "tacklePoints": 0
+        },
+        {
+          "id": "0-2",
+          "name": "Player 0-2",
+          "phone": "+919876543202",
+          "status": "ACTIVE",
+          "raidPoints": 0,
+          "tacklePoints": 0
+        },
+        {
+          "id": "0-3",
+          "name": "Player 0-3",
+          "phone": "+919876543203",
+          "status": "ACTIVE",
+          "raidPoints": 0,
+          "tacklePoints": 0
+        },
+        {
+          "id": "0-4",
+          "name": "Player 0-4",
+          "phone": "+919876543204",
+          "status": "ACTIVE",
+          "raidPoints": 0,
+          "tacklePoints": 0
+        },
+        {
+          "id": "0-5",
+          "name": "Player 0-5",
+          "phone": "+919876543205",
+          "status": "ACTIVE",
+          "raidPoints": 0,
+          "tacklePoints": 0
+        },
+        {
+          "id": "0-6",
+          "name": "Player 0-6",
+          "phone": "+919876543206",
+          "status": "ACTIVE",
+          "raidPoints": 0,
+          "tacklePoints": 0
+        },
+        {
+          "id": "0-7",
+          "name": "Player 0-7",
+          "phone": "+919876543207",
+          "status": "BENCH",
+          "raidPoints": 0,
+          "tacklePoints": 0
+        },
+        {
+          "id": "0-8",
+          "name": "Player 0-8",
+          "phone": "+919876543208",
+          "status": "BENCH",
+          "raidPoints": 0,
+          "tacklePoints": 0
+        }
+      ],
+      "queue": [],
+      "activeSubstitutions": 0
+    },
+    {
+      "name": "Team 1",
+      "players": [
+        {
+          "id": "1-0",
+          "name": "Player 1-0",
+          "phone": "+919876543210",
+          "status": "ACTIVE",
+          "raidPoints": 0,
+          "tacklePoints": 0
+        },
+        {
+          "id": "1-1",
+          "name": "Player 1-1",
+          "phone": "+919876543211",
+          "status": "ACTIVE",
+          "raidPoints": 0,
+          "tacklePoints": 0
+        },
+        {
+          "id": "1-2",
+          "name": "Player 1-2",
+          "phone": "+919876543212",
+          "status": "ACTIVE",
+          "raidPoints": 0,
+          "tacklePoints": 0
+        },
+        {
+          "id": "1-3",
+          "name": "Player 1-3",
+          "phone": "+919876543213",
+          "status": "ACTIVE",
+          "raidPoints": 0,
+          "tacklePoints": 0
+        },
+        {
+          "id": "1-4",
+          "name": "Player 1-4",
+          "phone": "+919876543214",
+          "status": "ACTIVE",
+          "raidPoints": 0,
+          "tacklePoints": 0
+        },
+        {
+          "id": "1-5",
+          "name": "Player 1-5",
+          "phone": "+919876543215",
+          "status": "ACTIVE",
+          "raidPoints": 0,
+          "tacklePoints": 0
+        },
+        {
+          "id": "1-6",
+          "name": "Player 1-6",
+          "phone": "+919876543216",
+          "status": "ACTIVE",
+          "raidPoints": 0,
+          "tacklePoints": 0
+        },
+        {
+          "id": "1-7",
+          "name": "Player 1-7",
+          "phone": "+919876543217",
+          "status": "BENCH",
+          "raidPoints": 0,
+          "tacklePoints": 0
+        },
+        {
+          "id": "1-8",
+          "name": "Player 1-8",
+          "phone": "+919876543218",
+          "status": "BENCH",
+          "raidPoints": 0,
+          "tacklePoints": 0
+        }
+      ],
+      "queue": [],
+      "activeSubstitutions": 0
+    }
+  ],
+  "scores": [0, 0],
+  "tieScores": [0, 0],
+  "pairScores": [0, 0],
+  "tieRaids": [0, 0],
+  "goldenPair": 0,
+  "half": 1,
+  "phase": "REGULATION",
+  "status": "LIVE",
+  "turn": 0,
+  "firstTurn": 0,
+  "raidNumber": 1,
+  "winner": null,
+  "halfMinutes": 20,
+  "raidSeconds": 30,
+  "clock": {
+    "remainingMs": 1200000,
+    "startedAt": 0
+  },
+  "raidClock": {
+    "remainingMs": 30000,
+    "startedAt": null
+  },
+  "currentRaiderId": null,
+  "expiryReviewed": false,
+  "tieBreakerRaiders": [[], []],
+  "lastTieRaiders": ["", ""]
+}

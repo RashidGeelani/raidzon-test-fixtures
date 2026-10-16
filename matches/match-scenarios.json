@@ -1,0 +1,2443 @@
+[
+  {
+    "name": "FIFO touch order, bonus isolation and half-time continuity",
+    "initialOverrides": {
+      "/teams/0/queue": ["0-5", "0-4"],
+      "/teams/0/players/5/status": "OUT",
+      "/teams/0/players/4/status": "OUT"
+    },
+    "events": [
+      {
+        "id": "event-1",
+        "at": 1000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-0"
+        },
+        "expect": {},
+        "expectedHash": "de3e6cacc87f9eecd50dba57afb89f832e06faf06ae7adf20862365d5966f595"
+      },
+      {
+        "id": "event-2",
+        "at": 2000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "TOUCH",
+          "defenderIds": ["1-2", "1-0"],
+          "bonus": false
+        },
+        "expect": {
+          "/scores": [2, 0],
+          "/teams/0/queue": [],
+          "/teams/1/queue": ["1-2", "1-0"],
+          "/teams/0/players/0/raidPoints": 2,
+          "/turn": 1
+        },
+        "expectedHash": "dc10b1adcbb387d3f681e5d46711c5dfad3b07da6f0d77e439ed1c8e0cda5312"
+      },
+      {
+        "id": "event-3",
+        "at": 3000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "1-1"
+        },
+        "expect": {},
+        "expectedHash": "89a20cbde2fe1434e1461fd2c5eb52c9a9c4e1f02d093e6164617ae7d16f304d"
+      },
+      {
+        "id": "event-4",
+        "at": 4000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "1-1",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": true
+        },
+        "expect": {
+          "/scores": [2, 1],
+          "/teams/1/queue": ["1-2", "1-0"]
+        },
+        "expectedHash": "c15e7878b3b02bd16469d0396f786e415c3db297c8c2a3a34d42ffaf56f421ff"
+      },
+      {
+        "id": "event-5",
+        "at": 5000,
+        "intent": {
+          "type": "END_HALF"
+        },
+        "expect": {
+          "/status": "HALF_TIME",
+          "/teams/1/queue": ["1-2", "1-0"]
+        },
+        "expectedHash": "da0dda1f39839f11793cc10e798e7a0229ff76d974d06e507c78f8aba9afd3b1"
+      },
+      {
+        "id": "event-6",
+        "at": 6000,
+        "intent": {
+          "type": "SUBSTITUTE",
+          "side": 1,
+          "outgoingId": "1-2",
+          "incomingId": "1-7"
+        },
+        "expect": {
+          "/teams/1/queue": ["1-7", "1-0"],
+          "/teams/1/players/7/status": "OUT"
+        },
+        "expectedHash": "83ee1dc48f8cad60438aa375a3e16b80ed210ac9f9ef142f81584e29918010ea"
+      },
+      {
+        "id": "event-7",
+        "at": 7000,
+        "intent": {
+          "type": "SECOND_HALF"
+        },
+        "expect": {
+          "/half": 2,
+          "/turn": 1,
+          "/teams/1/queue": ["1-7", "1-0"],
+          "/teams/1/activeSubstitutions": 0
+        },
+        "expectedHash": "8e0b438b8085fc0f1556554b7fc455263a00e169d9cafde739983fe0259decda"
+      }
+    ]
+  },
+  {
+    "name": "Super Tackle at three and sequential append-only Undo",
+    "initialOverrides": {
+      "/teams/1/queue": ["1-0", "1-1", "1-2", "1-3"],
+      "/teams/1/players/0/status": "OUT",
+      "/teams/1/players/1/status": "OUT",
+      "/teams/1/players/2/status": "OUT",
+      "/teams/1/players/3/status": "OUT"
+    },
+    "events": [
+      {
+        "id": "event-1",
+        "at": 1000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-0"
+        },
+        "expect": {},
+        "expectedHash": "35e8d67f1b0ea001d7ea258ffa35b22d4fe732d6751597e3bf98b3eb2a77494b"
+      },
+      {
+        "id": "event-2",
+        "at": 2000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "TACKLE",
+          "defenderIds": [],
+          "bonus": false,
+          "tacklerId": "1-4"
+        },
+        "expect": {
+          "/scores": [0, 2],
+          "/teams/1/queue": ["1-1", "1-2", "1-3"],
+          "/teams/0/queue": ["0-0"],
+          "/teams/1/players/4/tacklePoints": 1
+        },
+        "expectedHash": "cc05d389c106bbf36f03548e4fa8d56aa58560362adf54cdda576a96c351b0dc"
+      },
+      {
+        "id": "event-3",
+        "at": 3000,
+        "intent": {
+          "type": "TECHNICAL",
+          "side": 1
+        },
+        "expect": {
+          "/scores": [0, 3],
+          "/teams/1/queue": ["1-1", "1-2", "1-3"]
+        },
+        "expectedHash": "a1322cc2b7936379c7bc2c191a30517d298faa3ac6ce08ef59c49aaa6e077244"
+      },
+      {
+        "id": "event-4",
+        "at": 4000,
+        "intent": {
+          "type": "UNDO",
+          "targetEventId": "event-2"
+        },
+        "error": "Only the latest unreverted event can be undone."
+      },
+      {
+        "id": "event-5",
+        "at": 5000,
+        "intent": {
+          "type": "UNDO",
+          "targetEventId": "event-3"
+        },
+        "expect": {
+          "/scores": [0, 2]
+        },
+        "expectedHash": "c4c7fc4aa46aa285e23ff38af7faf9f61cf8595910ee60541ca8562d0a3403de"
+      },
+      {
+        "id": "event-6",
+        "at": 6000,
+        "intent": {
+          "type": "UNDO",
+          "targetEventId": "event-2"
+        },
+        "expect": {
+          "/scores": [0, 0],
+          "/teams/1/queue": ["1-0", "1-1", "1-2", "1-3"],
+          "/currentRaiderId": "0-0",
+          "/teams/1/players/4/tacklePoints": 0
+        },
+        "expectedHash": "a6a8a2ef97c995727361ce5f11276394931c00d55a457973c084d188442b5e43"
+      },
+      {
+        "id": "event-7",
+        "at": 7000,
+        "intent": {
+          "type": "UNDO",
+          "targetEventId": "event-1"
+        },
+        "expect": {
+          "/currentRaiderId": null,
+          "/raidNumber": 1
+        },
+        "expectedHash": "482ec86c0a697008eea65417d3e3fe203fdca5c3578fc9cb290f4554e70093bd"
+      },
+      {
+        "id": "event-8",
+        "at": 8000,
+        "intent": {
+          "type": "UNDO",
+          "targetEventId": "event-1"
+        },
+        "error": "Only the latest unreverted event can be undone."
+      }
+    ]
+  },
+  {
+    "name": "All-Out rebuild, Super 10 threshold and milestone Undo",
+    "initialOverrides": {},
+    "events": [
+      {
+        "id": "event-1",
+        "at": 1000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-0"
+        },
+        "expect": {},
+        "expectedHash": "dea8288b13a76df22377b049fd4603cc4c65efde6d94fb8930ad84bc12b606ea"
+      },
+      {
+        "id": "event-2",
+        "at": 2000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "TOUCH",
+          "defenderIds": ["1-0", "1-1", "1-2", "1-3", "1-4", "1-5", "1-6"],
+          "bonus": false
+        },
+        "expect": {
+          "/scores": [9, 0],
+          "/teams/1/queue": [],
+          "/teams/0/players/0/raidPoints": 7
+        },
+        "expectedHash": "6e7348173dc6eff158c9d70f0ae67d299033592024b431e43158b18c4fd53b42"
+      },
+      {
+        "id": "event-3",
+        "at": 3000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "1-0"
+        },
+        "expect": {},
+        "expectedHash": "22f57380a9176b6e675d58f37b31895481f8fec4bea80dfa9587dcdb938a7538"
+      },
+      {
+        "id": "event-4",
+        "at": 4000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "1-0",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": false
+        },
+        "expect": {},
+        "expectedHash": "89ee217e3997214287216527fb7e331ff71be95a33aa7b36d340701cb602ac53"
+      },
+      {
+        "id": "event-5",
+        "at": 5000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-0"
+        },
+        "expect": {},
+        "expectedHash": "8e11899354838e4c245d8c9b6e1d008f258a01f012e777cb25f847551855342a"
+      },
+      {
+        "id": "event-6",
+        "at": 6000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "TOUCH",
+          "defenderIds": ["1-0", "1-1", "1-2"],
+          "bonus": false
+        },
+        "expect": {
+          "/scores": [12, 0],
+          "/teams/0/players/0/raidPoints": 10
+        },
+        "expectedHash": "12f63e3bfab14ec0cd0bbd95a2e401473f5a92489ea0e1fdb3b6848f30f7bf6e"
+      },
+      {
+        "id": "event-7",
+        "at": 7000,
+        "intent": {
+          "type": "UNDO",
+          "targetEventId": "event-6"
+        },
+        "expect": {
+          "/scores": [9, 0],
+          "/teams/0/players/0/raidPoints": 7,
+          "/teams/1/queue": []
+        },
+        "expectedHash": "dfa3ed24e50a3dc0572c158c5f6100a857e0ecbc27da14ce97f7cf57c94cf647"
+      }
+    ]
+  },
+  {
+    "name": "Bonus remains with a tackle and causes no attacking revival",
+    "initialOverrides": {
+      "/teams/1/queue": ["1-5"],
+      "/teams/1/players/5/status": "OUT"
+    },
+    "events": [
+      {
+        "id": "event-1",
+        "at": 1000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-0"
+        },
+        "expect": {},
+        "expectedHash": "ad63ef726c772d3f9b5d0a766e54f65b8b832102a298c8217e2e113b9f823982"
+      },
+      {
+        "id": "event-2",
+        "at": 2000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "TACKLE",
+          "defenderIds": [],
+          "bonus": true,
+          "tacklerId": "1-0"
+        },
+        "expect": {
+          "/scores": [1, 1],
+          "/teams/0/queue": ["0-0"],
+          "/teams/1/queue": [],
+          "/teams/0/players/0/raidPoints": 1,
+          "/teams/1/players/0/tacklePoints": 1
+        },
+        "expectedHash": "f01c67813e48e7c69bc06d4dac9a06db13177a9d6ec02f738154c0d206640057"
+      }
+    ]
+  },
+  {
+    "name": "Last raider Self-Out awards All-Out and one opposing revival",
+    "initialOverrides": {
+      "/teams/0/queue": ["0-1", "0-2", "0-3", "0-4", "0-5", "0-6"],
+      "/teams/0/players/1/status": "OUT",
+      "/teams/0/players/2/status": "OUT",
+      "/teams/0/players/3/status": "OUT",
+      "/teams/0/players/4/status": "OUT",
+      "/teams/0/players/5/status": "OUT",
+      "/teams/0/players/6/status": "OUT",
+      "/teams/1/queue": ["1-1"],
+      "/teams/1/players/1/status": "OUT"
+    },
+    "events": [
+      {
+        "id": "event-1",
+        "at": 1000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-0"
+        },
+        "expect": {},
+        "expectedHash": "3ba63c87ac8ea83c6634c82f8a444485ef7e73cc3cee0641613ffd27f60d2e0c"
+      },
+      {
+        "id": "event-2",
+        "at": 2000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "SELF_OUT",
+          "defenderIds": [],
+          "bonus": false
+        },
+        "expect": {
+          "/scores": [0, 3],
+          "/teams/0/queue": [],
+          "/teams/1/queue": [],
+          "/teams/1/players/0/tacklePoints": 0
+        },
+        "expectedHash": "f49eb5593f16b1b6451697dcbdfb25da204b488ace4e4865c97ad67137638f75"
+      },
+      {
+        "id": "event-3",
+        "at": 3000,
+        "intent": {
+          "type": "UNDO",
+          "targetEventId": "event-2"
+        },
+        "expect": {
+          "/scores": [0, 0],
+          "/teams/0/queue": ["0-1", "0-2", "0-3", "0-4", "0-5", "0-6"],
+          "/teams/1/queue": ["1-1"]
+        },
+        "expectedHash": "fd53079e9bbbc6813fbd77d5a3493fd4b163dcd42c2b767780ff8afb92af226e"
+      }
+    ]
+  },
+  {
+    "name": "Touch and defender Self-Out produce one atomic All-Out",
+    "initialOverrides": {
+      "/teams/0/queue": ["0-1", "0-2"],
+      "/teams/0/players/1/status": "OUT",
+      "/teams/0/players/2/status": "OUT",
+      "/teams/1/queue": ["1-0", "1-1", "1-2", "1-3", "1-4"],
+      "/teams/1/players/0/status": "OUT",
+      "/teams/1/players/1/status": "OUT",
+      "/teams/1/players/2/status": "OUT",
+      "/teams/1/players/3/status": "OUT",
+      "/teams/1/players/4/status": "OUT"
+    },
+    "events": [
+      {
+        "id": "event-1",
+        "at": 1000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-0"
+        },
+        "expect": {},
+        "expectedHash": "e0e926941beb921ebfc942a4b0423cf712798c9cc8c205a9048557f796df2d59"
+      },
+      {
+        "id": "event-2",
+        "at": 2000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "TOUCH",
+          "defenderIds": ["1-5"],
+          "bonus": false,
+          "selfOutDefenderIds": ["1-6"],
+          "defenderOutOrder": ["1-5", "1-6"]
+        },
+        "expect": {
+          "/scores": [4, 0],
+          "/teams/0/players/0/raidPoints": 1,
+          "/teams/0/queue": [],
+          "/teams/1/queue": [],
+          "/raidNumber": 2
+        },
+        "expectedHash": "4d4d0adc0447a20ca71d0865689b75b796606928bee57f97aa74192f93482f07"
+      }
+    ]
+  },
+  {
+    "name": "Standalone Self-Out is FIFO and is forbidden during an active raid",
+    "initialOverrides": {
+      "/teams/0/queue": ["0-3", "0-2"],
+      "/teams/0/players/3/status": "OUT",
+      "/teams/0/players/2/status": "OUT"
+    },
+    "events": [
+      {
+        "id": "event-1",
+        "at": 1000,
+        "intent": {
+          "type": "DEFENDER_SELF_OUT",
+          "playerId": "1-0"
+        },
+        "expect": {
+          "/scores": [1, 0],
+          "/teams/0/queue": ["0-2"],
+          "/teams/1/queue": ["1-0"],
+          "/turn": 0,
+          "/raidNumber": 1
+        },
+        "expectedHash": "22641f025720722db2ae6e8e794104ac2f0576ce13a8e724c163b2bafc0aca29"
+      },
+      {
+        "id": "event-2",
+        "at": 2000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-0"
+        },
+        "expect": {},
+        "expectedHash": "1d4896ba05d6d944fbf057e152e790d0690664dfdc66edcb72862f690da99732"
+      },
+      {
+        "id": "event-3",
+        "at": 3000,
+        "intent": {
+          "type": "DEFENDER_SELF_OUT",
+          "playerId": "1-1"
+        },
+        "error": "Include defender Self-Out in the current raid result."
+      }
+    ]
+  },
+  {
+    "name": "Active substitution allowance resets at half-time",
+    "initialOverrides": {},
+    "events": [
+      {
+        "id": "event-1",
+        "at": 1000,
+        "intent": {
+          "type": "SUBSTITUTE",
+          "side": 0,
+          "outgoingId": "0-0",
+          "incomingId": "0-7"
+        },
+        "expect": {},
+        "expectedHash": "08ccd211d735f45707c8921d33ae6d629290a0dafa8e79b34ffb14b1c0ff9fd0"
+      },
+      {
+        "id": "event-2",
+        "at": 2000,
+        "intent": {
+          "type": "SUBSTITUTE",
+          "side": 0,
+          "outgoingId": "0-1",
+          "incomingId": "0-8"
+        },
+        "expect": {},
+        "expectedHash": "d79a526d652f178d4521ac2cd37327525c93acf7148a12cbe38d36ccba51fb6d"
+      },
+      {
+        "id": "event-3",
+        "at": 3000,
+        "intent": {
+          "type": "SUBSTITUTE",
+          "side": 0,
+          "outgoingId": "0-7",
+          "incomingId": "0-0"
+        },
+        "expect": {
+          "/teams/0/activeSubstitutions": 3
+        },
+        "expectedHash": "e83a0bdf39a748f795fd4a67f8a361c5529a4eccb53347ffc47cd1f2e4acdc5c"
+      },
+      {
+        "id": "event-4",
+        "at": 4000,
+        "intent": {
+          "type": "SUBSTITUTE",
+          "side": 0,
+          "outgoingId": "0-2",
+          "incomingId": "0-1"
+        },
+        "error": "Three active substitutions already used this half."
+      },
+      {
+        "id": "event-5",
+        "at": 5000,
+        "intent": {
+          "type": "END_HALF"
+        },
+        "expect": {},
+        "expectedHash": "964e944824f15434b8f571f103141ddebee6215c8e1817bd4cacb2fe55091000"
+      },
+      {
+        "id": "event-6",
+        "at": 6000,
+        "intent": {
+          "type": "SECOND_HALF"
+        },
+        "expect": {
+          "/teams/0/activeSubstitutions": 0
+        },
+        "expectedHash": "549239bd04e978ec95b17fbfa19bde6b81602bc044b89a3d1fa4a00a79644901"
+      },
+      {
+        "id": "event-7",
+        "at": 7000,
+        "intent": {
+          "type": "SUBSTITUTE",
+          "side": 0,
+          "outgoingId": "0-2",
+          "incomingId": "0-7"
+        },
+        "expect": {
+          "/teams/0/activeSubstitutions": 1
+        },
+        "expectedHash": "f4c421d0810838d75477e584ff1fa75cc5d24763470f03aa01509a0552833c59"
+      }
+    ]
+  },
+  {
+    "name": "OUT substitutions preserve queue position without consuming allowance",
+    "initialOverrides": {
+      "/teams/0/queue": ["0-3", "0-1"],
+      "/teams/0/players/3/status": "OUT",
+      "/teams/0/players/1/status": "OUT",
+      "/teams/0/activeSubstitutions": 3
+    },
+    "events": [
+      {
+        "id": "event-1",
+        "at": 1000,
+        "intent": {
+          "type": "SUBSTITUTE",
+          "side": 0,
+          "outgoingId": "0-3",
+          "incomingId": "0-7"
+        },
+        "expect": {
+          "/teams/0/queue": ["0-7", "0-1"],
+          "/teams/0/activeSubstitutions": 3
+        },
+        "expectedHash": "91bff6a109f08facadc9662f5abe5a986bcf69b8a3e33e9fe60a59d20061180f"
+      },
+      {
+        "id": "event-2",
+        "at": 2000,
+        "intent": {
+          "type": "SUBSTITUTE",
+          "side": 0,
+          "outgoingId": "0-7",
+          "incomingId": "0-8"
+        },
+        "expect": {
+          "/teams/0/queue": ["0-8", "0-1"],
+          "/teams/0/players/8/status": "OUT"
+        },
+        "expectedHash": "21fcc94b67c5605478bce59767bb5e070524043b1a590701c14700c01c3aaf6a"
+      }
+    ]
+  },
+  {
+    "name": "Paused time does not consume either clock",
+    "initialOverrides": {},
+    "events": [
+      {
+        "id": "event-1",
+        "at": 1000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-0"
+        },
+        "expect": {},
+        "expectedHash": "dea8288b13a76df22377b049fd4603cc4c65efde6d94fb8930ad84bc12b606ea"
+      },
+      {
+        "id": "event-2",
+        "at": 4000,
+        "intent": {
+          "type": "PAUSE"
+        },
+        "expect": {
+          "/clock": {
+            "remainingMs": 1196000,
+            "startedAt": null
+          },
+          "/raidClock": {
+            "remainingMs": 27000,
+            "startedAt": null
+          }
+        },
+        "expectedHash": "18f745041a3656ed8bd1f2928e9a873412dbbc767f507b76593e98df6ced6963"
+      },
+      {
+        "id": "event-3",
+        "at": 5000,
+        "intent": {
+          "type": "TECHNICAL",
+          "side": 0
+        },
+        "error": "Technical points require a live match."
+      },
+      {
+        "id": "event-4",
+        "at": 10000,
+        "intent": {
+          "type": "RESUME"
+        },
+        "expect": {
+          "/raidClock": {
+            "remainingMs": 27000,
+            "startedAt": 10000
+          }
+        },
+        "expectedHash": "4f19b926310a53c183db020a814e33ba57c281003cca2dc53e58765b75110e2b"
+      },
+      {
+        "id": "event-5",
+        "at": 15000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": false
+        },
+        "expect": {
+          "/clock": {
+            "remainingMs": 1191000,
+            "startedAt": 15000
+          },
+          "/raidClock": {
+            "remainingMs": 30000,
+            "startedAt": null
+          }
+        },
+        "expectedHash": "9b016932662245a483b7c4662ef11b2139287a2411ef323b3705eb3358fe3ef2"
+      }
+    ]
+  },
+  {
+    "name": "Expiry requires a decision and Not Expired permits normal scoring",
+    "initialOverrides": {},
+    "events": [
+      {
+        "id": "event-1",
+        "at": 1000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-0"
+        },
+        "expect": {},
+        "expectedHash": "dea8288b13a76df22377b049fd4603cc4c65efde6d94fb8930ad84bc12b606ea"
+      },
+      {
+        "id": "event-2",
+        "at": 2000,
+        "intent": {
+          "type": "NOT_EXPIRED"
+        },
+        "error": "No raid expiry decision is pending."
+      },
+      {
+        "id": "event-3",
+        "at": 31000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": false
+        },
+        "error": "Resolve the raid expiry before scoring."
+      },
+      {
+        "id": "event-4",
+        "at": 32000,
+        "intent": {
+          "type": "NOT_EXPIRED"
+        },
+        "expect": {
+          "/expiryReviewed": true
+        },
+        "expectedHash": "acb5850efedfa88d8da54fdb27d366a45306b65097b9c958546065cd9ad2fc46"
+      },
+      {
+        "id": "event-5",
+        "at": 32500,
+        "intent": {
+          "type": "NOT_EXPIRED"
+        },
+        "error": "No raid expiry decision is pending."
+      },
+      {
+        "id": "event-6",
+        "at": 33000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": false
+        },
+        "expect": {
+          "/raidNumber": 2,
+          "/expiryReviewed": false
+        },
+        "expectedHash": "a313fa0eaedd8e009b2c66abf7829c69244bf462c804c6444eadac93fe4b4d70"
+      }
+    ]
+  },
+  {
+    "name": "Confirmed expiry becomes raider Self-Out",
+    "initialOverrides": {},
+    "events": [
+      {
+        "id": "event-1",
+        "at": 1000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-0"
+        },
+        "expect": {},
+        "expectedHash": "dea8288b13a76df22377b049fd4603cc4c65efde6d94fb8930ad84bc12b606ea"
+      },
+      {
+        "id": "event-2",
+        "at": 31000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "SELF_OUT",
+          "defenderIds": [],
+          "bonus": false
+        },
+        "expect": {
+          "/scores": [0, 1],
+          "/teams/0/queue": ["0-0"]
+        },
+        "expectedHash": "068715e6443df36bd8440681f0a7dfa0d1c6025560da37aec990a9d73e1440b5"
+      }
+    ]
+  },
+  {
+    "name": "Completed regulation rejects scoring and Undo reopens exact lifecycle",
+    "initialOverrides": {},
+    "events": [
+      {
+        "id": "event-1",
+        "at": 1000,
+        "intent": {
+          "type": "TECHNICAL",
+          "side": 0
+        },
+        "expect": {},
+        "expectedHash": "bc2105349fbc7f08f8752054558fdeb3d37f2f6c1a78bcfff6d43ef75ce1ea5a"
+      },
+      {
+        "id": "event-2",
+        "at": 2000,
+        "intent": {
+          "type": "END_HALF"
+        },
+        "expect": {},
+        "expectedHash": "aa733ccfeeecc9e48777cb7d467c85342790891ee322088ff099bdcf59e68c33"
+      },
+      {
+        "id": "event-3",
+        "at": 3000,
+        "intent": {
+          "type": "SECOND_HALF"
+        },
+        "expect": {},
+        "expectedHash": "f6def62c79590845f91489c8d419d6c1c06efc9bb24299cbfd09c2299ef64c9a"
+      },
+      {
+        "id": "event-4",
+        "at": 4000,
+        "intent": {
+          "type": "END_MATCH"
+        },
+        "expect": {
+          "/winner": 0,
+          "/status": "COMPLETED",
+          "/scores": [1, 0]
+        },
+        "expectedHash": "692acf53130cee9fb237a16ec06087c41ad1ad7497f75b65b0cd82e24a6e68ce"
+      },
+      {
+        "id": "event-5",
+        "at": 5000,
+        "intent": {
+          "type": "TECHNICAL",
+          "side": 1
+        },
+        "error": "This match is complete. Undo the last event to correct it."
+      },
+      {
+        "id": "event-6",
+        "at": 6000,
+        "intent": {
+          "type": "UNDO",
+          "targetEventId": "event-4"
+        },
+        "expect": {
+          "/status": "LIVE",
+          "/winner": null,
+          "/half": 2
+        },
+        "expectedHash": "a0f77ed826fe02ada1e297418b1bf588d6ae1cb40fc2bf2d658e9c093a72147f"
+      },
+      {
+        "id": "event-7",
+        "at": 7000,
+        "intent": {
+          "type": "UNDO",
+          "targetEventId": "event-3"
+        },
+        "expect": {
+          "/status": "HALF_TIME",
+          "/half": 1
+        },
+        "expectedHash": "613caa4e73191966696c885b1a7cf4dd61894038c69ef90764301baac00bdc8a"
+      }
+    ]
+  },
+  {
+    "name": "Draw can be undone and changed to five raids",
+    "initialOverrides": {},
+    "events": [
+      {
+        "id": "event-1",
+        "at": 1000,
+        "intent": {
+          "type": "END_HALF"
+        },
+        "expect": {},
+        "expectedHash": "7836e0f793c5505699144c2a6afad0904fa9e0fec78231ed9f5b64e3d0c2cc3a"
+      },
+      {
+        "id": "event-2",
+        "at": 2000,
+        "intent": {
+          "type": "SECOND_HALF"
+        },
+        "expect": {},
+        "expectedHash": "189eb61416022ccb90e05c3462d9f63f8f9f177afc321f1ad120aab23c07e705"
+      },
+      {
+        "id": "event-3",
+        "at": 3000,
+        "intent": {
+          "type": "END_MATCH"
+        },
+        "expect": {
+          "/status": "TIED"
+        },
+        "expectedHash": "1a307139dcc5c26d59afeaf01e2a1af7e1dd12488c49be6e1bce0f7b4cfd5ce1"
+      },
+      {
+        "id": "event-4",
+        "at": 4000,
+        "intent": {
+          "type": "DRAW"
+        },
+        "expect": {
+          "/winner": "DRAW",
+          "/status": "COMPLETED"
+        },
+        "expectedHash": "6f391f8d72495b7665312d0dd5fa93fa6637c324c486a13b87cb66e6f8c2ea28"
+      },
+      {
+        "id": "event-5",
+        "at": 5000,
+        "intent": {
+          "type": "UNDO",
+          "targetEventId": "event-4"
+        },
+        "expect": {
+          "/winner": null,
+          "/status": "TIED"
+        },
+        "expectedHash": "3a167ffd65bb4f0ef9787edd072796d46fcd6656efad336d1dfc1d3b0c14f786"
+      },
+      {
+        "id": "event-6",
+        "at": 6000,
+        "intent": {
+          "type": "TIE_BREAK",
+          "raiderIds": [
+            ["0-0", "0-1", "0-2", "0-3", "0-4"],
+            ["1-0", "1-1", "1-2", "1-3", "1-4"]
+          ]
+        },
+        "expect": {
+          "/phase": "TIE_BREAK",
+          "/turn": 0,
+          "/clock/startedAt": null
+        },
+        "expectedHash": "8127891ba87b6f255ee5c43339a1a4a667779564a791843dd650944a8684c340"
+      }
+    ]
+  },
+  {
+    "name": "Invalid raid facts do not alter gameplay state",
+    "initialOverrides": {},
+    "events": [
+      {
+        "id": "event-1",
+        "at": 1000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "1-0"
+        },
+        "error": "Player must be active."
+      },
+      {
+        "id": "event-2",
+        "at": 2000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-7"
+        },
+        "error": "Player must be active."
+      },
+      {
+        "id": "event-3",
+        "at": 3000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-0"
+        },
+        "expect": {},
+        "expectedHash": "ce5293b29653732a7e3d018b3dbde158f87e1c686a09b582422c1924941f5283"
+      },
+      {
+        "id": "event-4",
+        "at": 4000,
+        "intent": {
+          "type": "END_HALF"
+        },
+        "error": "Finish the raid before ending the half."
+      },
+      {
+        "id": "event-5",
+        "at": 5000,
+        "intent": {
+          "type": "SUBSTITUTE",
+          "side": 0,
+          "outgoingId": "0-0",
+          "incomingId": "0-7"
+        },
+        "error": "Finish the raid before substituting."
+      },
+      {
+        "id": "event-6",
+        "at": 6000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "TOUCH",
+          "defenderIds": ["1-0", "1-0"],
+          "bonus": false
+        },
+        "error": "A defender can only be selected once."
+      },
+      {
+        "id": "event-7",
+        "at": 7000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "TOUCH",
+          "defenderIds": ["1-0"],
+          "bonus": false,
+          "selfOutDefenderIds": ["1-0"],
+          "defenderOutOrder": ["1-0", "1-0"]
+        },
+        "error": "A defender can only be selected once."
+      },
+      {
+        "id": "event-8",
+        "at": 8000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "TOUCH",
+          "defenderIds": ["1-7"],
+          "bonus": false
+        },
+        "error": "Player must be active."
+      },
+      {
+        "id": "event-9",
+        "at": 9000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "TACKLE",
+          "defenderIds": [],
+          "bonus": false,
+          "tacklerId": "0-1"
+        },
+        "error": "Player must be active."
+      },
+      {
+        "id": "event-10",
+        "at": 10000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "TACKLE",
+          "defenderIds": [],
+          "bonus": false
+        },
+        "error": "Choose the defender credited with the tackle."
+      },
+      {
+        "id": "event-11",
+        "at": 11000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "TACKLE",
+          "defenderIds": [],
+          "bonus": false,
+          "selfOutDefenderIds": ["1-0"],
+          "tacklerId": "1-1",
+          "defenderOutOrder": ["1-2"]
+        },
+        "error": "OUT order must contain every selected defender exactly once."
+      },
+      {
+        "id": "event-12",
+        "at": 12000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": false,
+          "tacklerId": "1-1"
+        },
+        "error": "Only a tackle can name a tackler."
+      },
+      {
+        "id": "event-13",
+        "at": 13000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": false
+        },
+        "expect": {
+          "/scores": [0, 0],
+          "/raidNumber": 2
+        },
+        "expectedHash": "27481b5db142e918d2cb28da608c60636041b80971459edce62c159596900409"
+      }
+    ]
+  },
+  {
+    "name": "Bonus at four defenders is rejected",
+    "initialOverrides": {
+      "/teams/1/queue": ["1-0", "1-1", "1-2"],
+      "/teams/1/players/0/status": "OUT",
+      "/teams/1/players/1/status": "OUT",
+      "/teams/1/players/2/status": "OUT"
+    },
+    "events": [
+      {
+        "id": "event-1",
+        "at": 1000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-0"
+        },
+        "expect": {},
+        "expectedHash": "83ba01783f33ba430f558c1dde3d99839b265bd9689f5ebc473dd05c197363cf"
+      },
+      {
+        "id": "event-2",
+        "at": 2000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": true
+        },
+        "error": "Bonus requires at least six defenders."
+      }
+    ]
+  },
+  {
+    "name": "High Five threshold disappears when its tackle is undone",
+    "initialOverrides": {
+      "/teams/1/players/0/tacklePoints": 4,
+      "/scores": [0, 4]
+    },
+    "events": [
+      {
+        "id": "event-1",
+        "at": 1000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-0"
+        },
+        "expect": {},
+        "expectedHash": "0612e4e6d2c5330cfe496a19e3a5eb9d9c046a3b4a2b092c3af17b89b1e5d116"
+      },
+      {
+        "id": "event-2",
+        "at": 2000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "TACKLE",
+          "defenderIds": [],
+          "bonus": false,
+          "tacklerId": "1-0"
+        },
+        "expect": {
+          "/teams/1/players/0/tacklePoints": 5,
+          "/scores": [0, 5]
+        },
+        "expectedHash": "74332ce46e83cc39830f86365d0e34e638fcbf80cfbbb5c2b14342da65115ad1"
+      },
+      {
+        "id": "event-3",
+        "at": 3000,
+        "intent": {
+          "type": "UNDO",
+          "targetEventId": "event-2"
+        },
+        "expect": {
+          "/teams/1/players/0/tacklePoints": 4,
+          "/scores": [0, 4]
+        },
+        "expectedHash": "585712fbf2a78d9787238a71185393efcd529b19eab5e753a6c5a2377e792b19"
+      }
+    ]
+  },
+  {
+    "name": "Lifecycle rejects invalid phase transitions",
+    "initialOverrides": {},
+    "events": [
+      {
+        "id": "event-1",
+        "at": 1000,
+        "intent": {
+          "type": "RESUME"
+        },
+        "error": "The match is not paused."
+      },
+      {
+        "id": "event-2",
+        "at": 2000,
+        "intent": {
+          "type": "SECOND_HALF"
+        },
+        "error": "End the first half first."
+      },
+      {
+        "id": "event-3",
+        "at": 3000,
+        "intent": {
+          "type": "END_MATCH"
+        },
+        "error": "End regulation during the second half."
+      },
+      {
+        "id": "event-4",
+        "at": 4000,
+        "intent": {
+          "type": "DRAW"
+        },
+        "error": "A draw requires tied regulation scores."
+      },
+      {
+        "id": "event-5",
+        "at": 5000,
+        "intent": {
+          "type": "TIE_BREAK",
+          "raiderIds": [
+            ["0-0", "0-1", "0-2", "0-3", "0-4"],
+            ["1-0", "1-1", "1-2", "1-3", "1-4"]
+          ]
+        },
+        "error": "Tie-break requires tied regulation scores."
+      },
+      {
+        "id": "event-6",
+        "at": 6000,
+        "intent": {
+          "type": "END_HALF"
+        },
+        "expect": {},
+        "expectedHash": "88f288a7b2992f85ff861116c13e2b9cd824569bd05c29ea9081f0da37c11490"
+      },
+      {
+        "id": "event-7",
+        "at": 7000,
+        "intent": {
+          "type": "SECOND_HALF"
+        },
+        "expect": {},
+        "expectedHash": "91d3e87d22bba209635abb769a85fe1f7090691d77966578af3ee3bfaf4327f7"
+      },
+      {
+        "id": "event-8",
+        "at": 8000,
+        "intent": {
+          "type": "END_MATCH"
+        },
+        "expect": {
+          "/status": "TIED"
+        },
+        "expectedHash": "310f52ededc49465863a644995c0864652d1ef6af9890fa9161075b56c549d59"
+      },
+      {
+        "id": "event-9",
+        "at": 9000,
+        "intent": {
+          "type": "TIE_BREAK",
+          "raiderIds": [
+            ["0-0", "0-1", "0-2", "0-3", "0-4"],
+            ["1-0", "1-1", "1-2", "1-3", "1-4"]
+          ]
+        },
+        "expect": {},
+        "expectedHash": "8127891ba87b6f255ee5c43339a1a4a667779564a791843dd650944a8684c340"
+      },
+      {
+        "id": "event-10",
+        "at": 10000,
+        "intent": {
+          "type": "SUBSTITUTE",
+          "side": 0,
+          "outgoingId": "0-0",
+          "incomingId": "0-7"
+        },
+        "error": "Substitutions are available during regulation."
+      }
+    ]
+  },
+  {
+    "name": "Five ordered raiders, court reset and equal opportunities with Team B first",
+    "initialOverrides": {
+      "/firstTurn": 1,
+      "/turn": 1,
+      "/teams/0/queue": ["0-0", "0-2"],
+      "/teams/0/players/0/status": "OUT",
+      "/teams/0/players/2/status": "OUT",
+      "/teams/1/queue": ["1-3"],
+      "/teams/1/players/3/status": "OUT"
+    },
+    "events": [
+      {
+        "id": "event-1",
+        "at": 1000,
+        "intent": {
+          "type": "END_HALF"
+        },
+        "expect": {},
+        "expectedHash": "ee3e63f1262a8f0b8616edfe2d8f3736c99ae8ca7889bc4b73cd5024ece176d7"
+      },
+      {
+        "id": "event-2",
+        "at": 2000,
+        "intent": {
+          "type": "SECOND_HALF"
+        },
+        "expect": {},
+        "expectedHash": "816bdfc65261b50c317f4dbb5660f815eba298bfd3526d32ab5bf121f6513828"
+      },
+      {
+        "id": "event-3",
+        "at": 3000,
+        "intent": {
+          "type": "END_MATCH"
+        },
+        "expect": {},
+        "expectedHash": "924116bda5737120d342dca364126c5e268aec470b00c0e548addf2aa4da1bbf"
+      },
+      {
+        "id": "event-4",
+        "at": 4000,
+        "intent": {
+          "type": "TIE_BREAK",
+          "raiderIds": [
+            ["0-0", "0-1", "0-2", "0-3", "0-4"],
+            ["1-0", "1-1", "1-2", "1-3", "1-4"]
+          ]
+        },
+        "expect": {
+          "/tieBreakerRaiders": [
+            ["0-0", "0-1", "0-2", "0-3", "0-4"],
+            ["1-0", "1-1", "1-2", "1-3", "1-4"]
+          ],
+          "/teams/0/queue": [],
+          "/teams/1/queue": []
+        },
+        "expectedHash": "3709f354d36acfa6a154d7329fc6a4c02eddda2b1ef6fd5b1741748c9cd08378"
+      },
+      {
+        "id": "event-5",
+        "at": 5000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "1-1"
+        },
+        "error": "Follow the selected five-raider sequence."
+      },
+      {
+        "id": "event-6",
+        "at": 6000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "1-5"
+        },
+        "error": "Choose one of the five selected tie-break raiders."
+      },
+      {
+        "id": "event-7",
+        "at": 7000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "1-0"
+        },
+        "expect": {},
+        "expectedHash": "4a7e1446efcd62902a5f07ea9e94fb5ed00d0bfddf68e4582994b8a296a8f341"
+      },
+      {
+        "id": "event-8",
+        "at": 8000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "1-0",
+          "outcome": "TOUCH",
+          "defenderIds": ["0-0", "0-2"],
+          "bonus": false
+        },
+        "expect": {},
+        "expectedHash": "3727b789bd019803369b20f4cb619ed9044864d950d35b65e3eb958260ad2c26"
+      },
+      {
+        "id": "event-9",
+        "at": 9000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-0"
+        },
+        "expect": {},
+        "expectedHash": "938244b4ff71e8bebb085a261d6ff1dde6ba6bce778fb910274d8f06deb91878"
+      },
+      {
+        "id": "event-10",
+        "at": 10000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": true
+        },
+        "expect": {
+          "/teams/0/queue": [],
+          "/teams/1/queue": []
+        },
+        "expectedHash": "02c76173f51fa1e5e6538ec1809f09b1b25c5e34b0d25339ea44482310591a81"
+      },
+      {
+        "id": "event-11",
+        "at": 11000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "1-1"
+        },
+        "expect": {},
+        "expectedHash": "90d81a6f3b78a941e00ccf3b5b0cf1c8ae63a28da90de118a2cecb95831f3b73"
+      },
+      {
+        "id": "event-12",
+        "at": 12000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "1-1",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": true
+        },
+        "expect": {},
+        "expectedHash": "3bd29c0107cb9fb968dcbfd38c7d07fb8f7594f5e641949395bc18b89fdf6ad5"
+      },
+      {
+        "id": "event-13",
+        "at": 13000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-1"
+        },
+        "expect": {},
+        "expectedHash": "5ed421641a0f1c83c8e892295897f857e132b40f9e606cbd5eb85ac600a934c8"
+      },
+      {
+        "id": "event-14",
+        "at": 14000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-1",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": true
+        },
+        "expect": {},
+        "expectedHash": "4a0ddb968d17f28b7d502d7a3d67ea876bf39da028a002c26007e73861a64563"
+      },
+      {
+        "id": "event-15",
+        "at": 15000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "1-2"
+        },
+        "expect": {},
+        "expectedHash": "c0d5d23b38059e3979d5b1b624c6fb5c4a07abaa5c8c2c226e717154de03c79a"
+      },
+      {
+        "id": "event-16",
+        "at": 16000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "1-2",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": true
+        },
+        "expect": {},
+        "expectedHash": "462db7d3b3d4bbf54b687989142309f07d7d8b4e0fc24759bb986bf96e91aa51"
+      },
+      {
+        "id": "event-17",
+        "at": 17000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-2"
+        },
+        "expect": {},
+        "expectedHash": "cc463eb3e38cdf7a8b208e795b0eb63b17f6b64555f118057e69679fe11282d5"
+      },
+      {
+        "id": "event-18",
+        "at": 18000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-2",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": true
+        },
+        "expect": {},
+        "expectedHash": "45c218fd84a50f63dde8960eee937aa4eb2704462ddea6b692c07f209f7eea2b"
+      },
+      {
+        "id": "event-19",
+        "at": 19000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "1-3"
+        },
+        "expect": {},
+        "expectedHash": "ff9efce7923d07232dd8f06042071c091731604dcd30e2e384f8749a106eacfb"
+      },
+      {
+        "id": "event-20",
+        "at": 20000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "1-3",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": true
+        },
+        "expect": {},
+        "expectedHash": "414d6af676d196ad28670a5276e940ec918b9ab51e4ddfefa9098146fdfb8614"
+      },
+      {
+        "id": "event-21",
+        "at": 21000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-3"
+        },
+        "expect": {},
+        "expectedHash": "0e52228def303cc4055d0107e9db0888f526c911156f157a2b87eb5fff4b8365"
+      },
+      {
+        "id": "event-22",
+        "at": 22000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-3",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": true
+        },
+        "expect": {},
+        "expectedHash": "1e8a4e702c96ce3c3d04cc211cf31ff353c2f914906468489c64607b6073358f"
+      },
+      {
+        "id": "event-23",
+        "at": 23000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "1-4"
+        },
+        "expect": {},
+        "expectedHash": "80d9e4b35407acaa7ff5b61a64f26e30de96d84cc252849fa57b7b854e3e6618"
+      },
+      {
+        "id": "event-24",
+        "at": 24000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "1-4",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": true
+        },
+        "expect": {
+          "/status": "LIVE",
+          "/tieRaids": [4, 5]
+        },
+        "expectedHash": "6d6773351c3f7ddbc421c482e89be24ba763c611c73f73f3f423ac9e7a623e26"
+      },
+      {
+        "id": "event-25",
+        "at": 25000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-4"
+        },
+        "expect": {},
+        "expectedHash": "1484e8bc0bca3ee93c2ecb36206cadcf4d781aa7a16601a2d4037070a1d7799b"
+      },
+      {
+        "id": "event-26",
+        "at": 26000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-4",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": true
+        },
+        "expect": {
+          "/status": "COMPLETED",
+          "/winner": 1,
+          "/tieScores": [5, 6],
+          "/scores": [0, 0]
+        },
+        "expectedHash": "a97b84b40d0ac015f4f7e83c73ac5724b669fb22e56ac9c6f62a864acca4ce48"
+      }
+    ]
+  },
+  {
+    "name": "Golden Raid pairs reject repeated raiders and Undo restores selection state",
+    "initialOverrides": {},
+    "events": [
+      {
+        "id": "event-1",
+        "at": 1000,
+        "intent": {
+          "type": "END_HALF"
+        },
+        "expect": {},
+        "expectedHash": "7836e0f793c5505699144c2a6afad0904fa9e0fec78231ed9f5b64e3d0c2cc3a"
+      },
+      {
+        "id": "event-2",
+        "at": 2000,
+        "intent": {
+          "type": "SECOND_HALF"
+        },
+        "expect": {},
+        "expectedHash": "189eb61416022ccb90e05c3462d9f63f8f9f177afc321f1ad120aab23c07e705"
+      },
+      {
+        "id": "event-3",
+        "at": 3000,
+        "intent": {
+          "type": "END_MATCH"
+        },
+        "expect": {},
+        "expectedHash": "1a307139dcc5c26d59afeaf01e2a1af7e1dd12488c49be6e1bce0f7b4cfd5ce1"
+      },
+      {
+        "id": "event-4",
+        "at": 4000,
+        "intent": {
+          "type": "TIE_BREAK",
+          "raiderIds": [
+            ["0-0", "0-1", "0-2", "0-3", "0-4"],
+            ["1-0", "1-1", "1-2", "1-3", "1-4"]
+          ]
+        },
+        "expect": {
+          "/tieBreakerRaiders": [
+            ["0-0", "0-1", "0-2", "0-3", "0-4"],
+            ["1-0", "1-1", "1-2", "1-3", "1-4"]
+          ],
+          "/teams/0/queue": [],
+          "/teams/1/queue": []
+        },
+        "expectedHash": "8127891ba87b6f255ee5c43339a1a4a667779564a791843dd650944a8684c340"
+      },
+      {
+        "id": "event-5",
+        "at": 5000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-0"
+        },
+        "expect": {},
+        "expectedHash": "b65cf6c2b5bfb6e4a25666bfcf0c765df5021f0065b316e194bced9dcce16b1a"
+      },
+      {
+        "id": "event-6",
+        "at": 6000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": true
+        },
+        "expect": {},
+        "expectedHash": "b14a4215f44ab52b0c6a84e610bf5dca06a4c783df91b69adcf054a2fe687460"
+      },
+      {
+        "id": "event-7",
+        "at": 7000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "1-0"
+        },
+        "expect": {},
+        "expectedHash": "3049028980c957c79a4e3ebdcec36319577d6a6c6bdb23f1ccd25856a8c4d04d"
+      },
+      {
+        "id": "event-8",
+        "at": 8000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "1-0",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": true
+        },
+        "expect": {},
+        "expectedHash": "2e2fe710b0df2a7d2544b5c635ad8437bbe26ab697b3f85b883add2c2f5604a7"
+      },
+      {
+        "id": "event-9",
+        "at": 9000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-1"
+        },
+        "expect": {},
+        "expectedHash": "35af06a4b52808d17a0e6963523000e85a91c68ee9c4d89127a26163d32512b7"
+      },
+      {
+        "id": "event-10",
+        "at": 10000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-1",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": true
+        },
+        "expect": {},
+        "expectedHash": "61c54303fdbcd72607449235e18da70e5b934c143bb57bb0f2981f6d82866db4"
+      },
+      {
+        "id": "event-11",
+        "at": 11000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "1-1"
+        },
+        "expect": {},
+        "expectedHash": "bd1c3799bee671a21cfba375ec544ff64cb70d7b4936ea4df3d585d494c0d122"
+      },
+      {
+        "id": "event-12",
+        "at": 12000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "1-1",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": true
+        },
+        "expect": {},
+        "expectedHash": "30cad90afd0ef84e6a681152aa03f290a7984dc2c1dbfc33f1ed19deb0ab615b"
+      },
+      {
+        "id": "event-13",
+        "at": 13000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-2"
+        },
+        "expect": {},
+        "expectedHash": "c7e5e736f206bf49d0a590c4a52dd7cff305a302f9626bc9a3cdc778b0eff278"
+      },
+      {
+        "id": "event-14",
+        "at": 14000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-2",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": true
+        },
+        "expect": {},
+        "expectedHash": "dd0141571bcb9dc18b2050228a54c868bd20096850eafe7a39fd591d5be5f6d5"
+      },
+      {
+        "id": "event-15",
+        "at": 15000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "1-2"
+        },
+        "expect": {},
+        "expectedHash": "40c5f71b40b676f9f41a52deb65bad86f0727ef40e9a12dae3c815ba49d49e19"
+      },
+      {
+        "id": "event-16",
+        "at": 16000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "1-2",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": true
+        },
+        "expect": {},
+        "expectedHash": "560717e4aaf124efbc612ed94d5e972b2ce918149a25fa9052ae240fa67edfe1"
+      },
+      {
+        "id": "event-17",
+        "at": 17000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-3"
+        },
+        "expect": {},
+        "expectedHash": "49d285e0226a9a972c6cb03d0261ea903418546aa1f7e445d92a3403a9e15b7f"
+      },
+      {
+        "id": "event-18",
+        "at": 18000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-3",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": true
+        },
+        "expect": {},
+        "expectedHash": "52f9bcab0ed982fa17d82f32a8336e4d4765843c13d71b228d5a9def36b97e3d"
+      },
+      {
+        "id": "event-19",
+        "at": 19000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "1-3"
+        },
+        "expect": {},
+        "expectedHash": "3bc88174b3ea5701e84518c9c7caff434be2cef1ed9a99fced4a1873e1a188e4"
+      },
+      {
+        "id": "event-20",
+        "at": 20000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "1-3",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": true
+        },
+        "expect": {},
+        "expectedHash": "784a8f36e47f2969039ca0755b64fcb31dd6fb7c468f204d6559232d4eca56cc"
+      },
+      {
+        "id": "event-21",
+        "at": 21000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-4"
+        },
+        "expect": {},
+        "expectedHash": "74a7f1fa79e0d42dcefe9d12e97be2d193ae88e4de7a5cc6d860d1afb8d8772d"
+      },
+      {
+        "id": "event-22",
+        "at": 22000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-4",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": true
+        },
+        "expect": {},
+        "expectedHash": "4d7d813895667f41347d5f1cb41db58559c2c55b7295bab5b0bc56b0f196e1d6"
+      },
+      {
+        "id": "event-23",
+        "at": 23000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "1-4"
+        },
+        "expect": {},
+        "expectedHash": "089943716067b25b7ac60e8f5ef0cd900daa35b1f6bcf4619e08b516022c4795"
+      },
+      {
+        "id": "event-24",
+        "at": 24000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "1-4",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": true
+        },
+        "expect": {
+          "/phase": "GOLDEN_RAID",
+          "/tieScores": [5, 5],
+          "/goldenPair": 1
+        },
+        "expectedHash": "ed6398bca28d686a26963a65144cf5c3f5e7373bcb4a846baefab87d0d91a3be"
+      },
+      {
+        "id": "event-25",
+        "at": 25000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-4"
+        },
+        "error": "A raider cannot take consecutive Golden Raid turns for their team."
+      },
+      {
+        "id": "event-26",
+        "at": 26000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-0"
+        },
+        "expect": {},
+        "expectedHash": "f5e593f5d45f6082e2fb27bd8324bb7a77ff7d8ec9c0d4323c0d6a70aedffdc5"
+      },
+      {
+        "id": "event-27",
+        "at": 27000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": true
+        },
+        "expect": {
+          "/status": "LIVE",
+          "/pairScores": [1, 0]
+        },
+        "expectedHash": "fe2f4501f9a106b522505ff07f9c58a4d73bd6b9743cecb02bb3b2fd7ac206a6"
+      },
+      {
+        "id": "event-28",
+        "at": 28000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "1-0"
+        },
+        "expect": {},
+        "expectedHash": "76e13eeace763cf66823ff4a620ea82523718de1c9f7b4f8354de5662d314375"
+      },
+      {
+        "id": "event-29",
+        "at": 29000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "1-0",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": true
+        },
+        "expect": {
+          "/goldenPair": 2,
+          "/pairScores": [0, 0],
+          "/tieScores": [6, 6]
+        },
+        "expectedHash": "196db941850987863c3655d8565af191b80b1c03219652021b7eab236d826ffc"
+      },
+      {
+        "id": "event-30",
+        "at": 30000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-0"
+        },
+        "error": "A raider cannot take consecutive Golden Raid turns for their team."
+      },
+      {
+        "id": "event-31",
+        "at": 31000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-1"
+        },
+        "expect": {},
+        "expectedHash": "f2184c45652fa8a2ea1ea6a8a263268ccf011bdf793c7de3abc46e2af7f31031"
+      },
+      {
+        "id": "event-32",
+        "at": 32000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-1",
+          "outcome": "TOUCH",
+          "defenderIds": ["1-1", "1-2"],
+          "bonus": false
+        },
+        "expect": {
+          "/status": "LIVE",
+          "/pairScores": [2, 0]
+        },
+        "expectedHash": "d41e102c6763da2bf0ae6dca8c52b7e41520272a0673763b04157119bc97d062"
+      },
+      {
+        "id": "event-33",
+        "at": 33000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "1-1"
+        },
+        "expect": {},
+        "expectedHash": "fb33f78aea067e2c47112e720daafa8cd78362a93fce3ef080a3a1c504bd54c7"
+      },
+      {
+        "id": "event-34",
+        "at": 34000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "1-1",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": true
+        },
+        "expect": {
+          "/status": "COMPLETED",
+          "/winner": 0,
+          "/tieScores": [8, 7]
+        },
+        "expectedHash": "32d76b2ff8ba813742792f14ba1e60a6ad814761609fc3ad195f1cb55be9fc0b"
+      },
+      {
+        "id": "event-35",
+        "at": 35000,
+        "intent": {
+          "type": "UNDO",
+          "targetEventId": "event-34"
+        },
+        "expect": {
+          "/status": "LIVE",
+          "/currentRaiderId": "1-1",
+          "/lastTieRaiders": ["0-1", "1-0"]
+        },
+        "expectedHash": "1142826ecd28554eee03d0016f6bdc214ec0d36d5dec6ca4f65a667a0a3ebaa8"
+      },
+      {
+        "id": "event-36",
+        "at": 36000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "1-1",
+          "outcome": "TOUCH",
+          "defenderIds": ["0-1", "0-2"],
+          "bonus": false
+        },
+        "expect": {
+          "/phase": "GOLDEN_RAID",
+          "/goldenPair": 3,
+          "/tieScores": [8, 8],
+          "/pairScores": [0, 0]
+        },
+        "expectedHash": "4b4c825c71cb3efedde09bcdd7ebfe64575c3e1a6fa83dd5221876bfc790a0d2"
+      }
+    ]
+  },
+  {
+    "name": "Tie-break empty raid is raider OUT and next raid resets both courts",
+    "initialOverrides": {},
+    "events": [
+      {
+        "id": "event-1",
+        "at": 1000,
+        "intent": {
+          "type": "END_HALF"
+        },
+        "expect": {},
+        "expectedHash": "7836e0f793c5505699144c2a6afad0904fa9e0fec78231ed9f5b64e3d0c2cc3a"
+      },
+      {
+        "id": "event-2",
+        "at": 2000,
+        "intent": {
+          "type": "SECOND_HALF"
+        },
+        "expect": {},
+        "expectedHash": "189eb61416022ccb90e05c3462d9f63f8f9f177afc321f1ad120aab23c07e705"
+      },
+      {
+        "id": "event-3",
+        "at": 3000,
+        "intent": {
+          "type": "END_MATCH"
+        },
+        "expect": {},
+        "expectedHash": "1a307139dcc5c26d59afeaf01e2a1af7e1dd12488c49be6e1bce0f7b4cfd5ce1"
+      },
+      {
+        "id": "event-4",
+        "at": 4000,
+        "intent": {
+          "type": "TIE_BREAK",
+          "raiderIds": [
+            ["0-0", "0-1", "0-2", "0-3", "0-4"],
+            ["1-0", "1-1", "1-2", "1-3", "1-4"]
+          ]
+        },
+        "expect": {
+          "/tieBreakerRaiders": [
+            ["0-0", "0-1", "0-2", "0-3", "0-4"],
+            ["1-0", "1-1", "1-2", "1-3", "1-4"]
+          ],
+          "/teams/0/queue": [],
+          "/teams/1/queue": []
+        },
+        "expectedHash": "8127891ba87b6f255ee5c43339a1a4a667779564a791843dd650944a8684c340"
+      },
+      {
+        "id": "event-5",
+        "at": 5000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-0"
+        },
+        "expect": {},
+        "expectedHash": "b65cf6c2b5bfb6e4a25666bfcf0c765df5021f0065b316e194bced9dcce16b1a"
+      },
+      {
+        "id": "event-6",
+        "at": 6000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": false
+        },
+        "expect": {
+          "/tieScores": [0, 1],
+          "/teams/0/queue": ["0-0"],
+          "/lastTieRaiders": ["0-0", ""]
+        },
+        "expectedHash": "ae114e278d98680e16ceac14915dae4c21ebe8b161ac07d2cdd535b470c4e33e"
+      },
+      {
+        "id": "event-7",
+        "at": 7000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "1-0"
+        },
+        "expect": {
+          "/teams/0/queue": [],
+          "/teams/0/players/0/status": "ACTIVE",
+          "/teams/0/players/7/status": "BENCH"
+        },
+        "expectedHash": "0b9790d68c1d59b4ec79d047f3f1e92f2ada849ea56809e7707ee293a9e5e609"
+      },
+      {
+        "id": "event-8",
+        "at": 8000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "1-0",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": true
+        },
+        "expect": {
+          "/tieScores": [0, 2],
+          "/teams/1/queue": []
+        },
+        "expectedHash": "6917813bd7c99b7ad952111a1537ef140a3be1286a1305136e892dd75141eca5"
+      }
+    ]
+  },
+  {
+    "name": "Tie-break selections reject duplicates, bench players and missing raiders",
+    "initialOverrides": {
+      "/half": 2,
+      "/status": "TIED"
+    },
+    "events": [
+      {
+        "id": "event-1",
+        "at": 1000,
+        "intent": {
+          "type": "TIE_BREAK",
+          "raiderIds": [
+            ["0-1", "0-2", "0-3", "0-4"],
+            ["1-0", "1-1", "1-2", "1-3", "1-4"]
+          ]
+        },
+        "error": "Select five distinct playing raiders per team in order."
+      },
+      {
+        "id": "event-2",
+        "at": 2000,
+        "intent": {
+          "type": "TIE_BREAK",
+          "raiderIds": [
+            ["0-0", "0-0", "0-2", "0-3", "0-4"],
+            ["1-0", "1-1", "1-2", "1-3", "1-4"]
+          ]
+        },
+        "error": "Select five distinct playing raiders per team in order."
+      },
+      {
+        "id": "event-3",
+        "at": 3000,
+        "intent": {
+          "type": "TIE_BREAK",
+          "raiderIds": [
+            ["0-0", "0-1", "0-2", "0-3", "0-7"],
+            ["1-0", "1-1", "1-2", "1-3", "1-4"]
+          ]
+        },
+        "error": "Select five distinct playing raiders per team in order."
+      },
+      {
+        "id": "event-4",
+        "at": 4000,
+        "intent": {
+          "type": "TIE_BREAK",
+          "raiderIds": [
+            ["0-0", "0-1", "0-2", "0-3", "0-4"],
+            ["1-0", "1-1", "1-2", "1-3", "1-4"]
+          ]
+        },
+        "expect": {
+          "/phase": "TIE_BREAK"
+        },
+        "expectedHash": "219b77aa71484bdf18a0944a6001d6dea0aff4ae848640b5ad227f2a8832c8fe"
+      },
+      {
+        "id": "event-5",
+        "at": 5000,
+        "intent": {
+          "type": "UNDO",
+          "targetEventId": "event-4"
+        },
+        "expect": {
+          "/status": "TIED",
+          "/tieBreakerRaiders": [[], []]
+        },
+        "expectedHash": "21c73b3108de99340728c001dd13fae48fc7d20dd5ceb9b9d30c17b803fce5a4"
+      }
+    ]
+  },
+  {
+    "name": "Simultaneous opposing outs revive one FIFO player each and Undo atomically",
+    "initialOverrides": {
+      "/teams/0/queue": ["0-2", "0-1"],
+      "/teams/0/players/2/status": "OUT",
+      "/teams/0/players/1/status": "OUT",
+      "/teams/1/queue": ["1-3", "1-4", "1-5", "1-6"],
+      "/teams/1/players/3/status": "OUT",
+      "/teams/1/players/4/status": "OUT",
+      "/teams/1/players/5/status": "OUT",
+      "/teams/1/players/6/status": "OUT"
+    },
+    "events": [
+      {
+        "id": "event-1",
+        "at": 1000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-0"
+        },
+        "expect": {},
+        "expectedHash": "aa89e86bcec6df55a5310094d9b2d2594e56a111f57afff64d89a42d7bbb818d"
+      },
+      {
+        "id": "event-2",
+        "at": 2000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "TACKLE",
+          "defenderIds": ["1-0"],
+          "bonus": false,
+          "tacklerId": "1-1"
+        },
+        "expect": {
+          "/scores": [1, 1],
+          "/teams/0/queue": ["0-1", "0-0"],
+          "/teams/1/queue": ["1-4", "1-5", "1-6", "1-0"],
+          "/teams/0/players/0/raidPoints": 1,
+          "/teams/1/players/1/tacklePoints": 1
+        },
+        "expectedHash": "8a86e8bf0fa04c6367c680864abb979646680a65b9dd213398ad4e46840ba5f2"
+      },
+      {
+        "id": "event-3",
+        "at": 3000,
+        "intent": {
+          "type": "UNDO",
+          "targetEventId": "event-2"
+        },
+        "expect": {
+          "/scores": [0, 0],
+          "/teams/0/queue": ["0-2", "0-1"],
+          "/teams/1/queue": ["1-3", "1-4", "1-5", "1-6"]
+        },
+        "expectedHash": "fc74948701e749044fbded0e4db01268a988a4577a0f5d5be6ec72c4d061d199"
+      }
+    ]
+  },
+  {
+    "name": "Both last players out receive revivals before All-Out is evaluated",
+    "initialOverrides": {
+      "/teams/0/queue": ["0-1", "0-2", "0-3", "0-4", "0-5", "0-6"],
+      "/teams/0/players/1/status": "OUT",
+      "/teams/0/players/2/status": "OUT",
+      "/teams/0/players/3/status": "OUT",
+      "/teams/0/players/4/status": "OUT",
+      "/teams/0/players/5/status": "OUT",
+      "/teams/0/players/6/status": "OUT",
+      "/teams/1/queue": ["1-1", "1-2", "1-3", "1-4", "1-5", "1-6"],
+      "/teams/1/players/1/status": "OUT",
+      "/teams/1/players/2/status": "OUT",
+      "/teams/1/players/3/status": "OUT",
+      "/teams/1/players/4/status": "OUT",
+      "/teams/1/players/5/status": "OUT",
+      "/teams/1/players/6/status": "OUT"
+    },
+    "events": [
+      {
+        "id": "event-1",
+        "at": 1000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-0"
+        },
+        "expect": {},
+        "expectedHash": "d0d804c1b6447830e452ac2b983f03253735b17b0c56d7d94aa388819e0c9f39"
+      },
+      {
+        "id": "event-2",
+        "at": 2000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "SELF_OUT",
+          "defenderIds": [],
+          "bonus": false,
+          "selfOutDefenderIds": ["1-0"]
+        },
+        "expect": {
+          "/scores": [1, 1],
+          "/teams/0/queue": ["0-2", "0-3", "0-4", "0-5", "0-6", "0-0"],
+          "/teams/1/queue": ["1-2", "1-3", "1-4", "1-5", "1-6", "1-0"]
+        },
+        "expectedHash": "0e86770a7f68f190e4ee538f14c0bb4f51a512fa7726f5c424ae88c1dfa1ecd5"
+      }
+    ]
+  },
+  {
+    "name": "Mixed OUT chronology follows one explicit selection order",
+    "initialOverrides": {},
+    "events": [
+      {
+        "id": "event-1",
+        "at": 1000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-0"
+        },
+        "expect": {},
+        "expectedHash": "dea8288b13a76df22377b049fd4603cc4c65efde6d94fb8930ad84bc12b606ea"
+      },
+      {
+        "id": "event-2",
+        "at": 2000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "TOUCH",
+          "defenderIds": ["1-0", "1-2"],
+          "bonus": false,
+          "selfOutDefenderIds": ["1-1"],
+          "defenderOutOrder": ["1-1", "1-0", "1-2"]
+        },
+        "expect": {
+          "/scores": [3, 0],
+          "/teams/1/queue": ["1-1", "1-0", "1-2"],
+          "/teams/0/players/0/raidPoints": 2
+        },
+        "expectedHash": "099defaf8038d42fe213adbe12144ce76c6b715c0aba04b252a16d7ac7d65f24"
+      }
+    ]
+  },
+  {
+    "name": "Bonus at exactly five is rejected without changing state",
+    "initialOverrides": {
+      "/teams/1/queue": ["1-5", "1-6"],
+      "/teams/1/players/5/status": "OUT",
+      "/teams/1/players/6/status": "OUT"
+    },
+    "events": [
+      {
+        "id": "event-1",
+        "at": 1000,
+        "intent": {
+          "type": "START_RAID",
+          "raiderId": "0-0"
+        },
+        "expect": {},
+        "expectedHash": "c8598aac308c5420f505a07ce2df0649c8981725b443539ddb8de767d89af73a"
+      },
+      {
+        "id": "event-2",
+        "at": 2000,
+        "intent": {
+          "type": "RAID",
+          "raiderId": "0-0",
+          "outcome": "EMPTY",
+          "defenderIds": [],
+          "bonus": true
+        },
+        "error": "Bonus requires at least six defenders."
+      }
+    ]
+  }
+]
